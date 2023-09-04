@@ -30,25 +30,46 @@ public class Main {
 
     public static void checkYear(int year) {
         if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) {
-            System.out.println(year + " год является високосным.\n");
+            System.out.printf("%d год является високосным.\n", year);
         } else {
-            System.out.println(year + " год не является високосным.\n");
+            System.out.printf("%d год не является високосным.\n", year);
         }
     }
 
     public static void checkClientDevice(byte clientOS, short clientYear) {
-        int currentYear = LocalDate.now().getYear();
-        if (clientOS == 0 && clientYear < currentYear) {
-            System.out.println("Установите облегчённую версию приложения для iOS по ссылке.\n");
-        } else if (clientOS == 0 && clientYear == currentYear) {
-            System.out.println("Установите версию для iOS по ссылке.\n");
-        } else if (clientOS == 1 && clientYear < currentYear) {
-            System.out.println("Установите облегчённую версию приложения для Android по ссылке.\n");
-        } else if (clientOS == 1 && clientYear == currentYear) {
-            System.out.println("Установите версию для Android по ссылке.\n");
-        } else {
-            System.out.println("Неизвестная операционная система!");
+        String deviceOSName = checkDeviceOS(clientOS);
+        if (deviceOSName.isEmpty()) {
+            System.out.println("Неизвестное устройство!");
+            return;
         }
+        if (checkDeviceYear(clientYear)) {
+            System.out.printf("Установите облегчённую версию приложения для %s по ссылке. \n", deviceOSName);
+        } else {
+            System.out.printf("Установите приложение для %s по ссылке.\n", deviceOSName);
+        }
+    }
+
+    /**
+     * Проверка года устройства
+     * @param clientYear - год выпуска устройства
+     * @return булево значение (true - устройство старое; false - устройство новое)
+     */
+    private static boolean checkDeviceYear(short clientYear) {
+        int currentYear = LocalDate.now().getYear();
+        return clientYear < currentYear;
+    }
+
+    /**
+     * Проверка ОС устройства
+     * @param clientOS - цифровое обозначение ОС устройства
+     * @return Строка с наименование ОС, либо пустая строка, если устройство неизвестно
+     */
+    private static String checkDeviceOS(byte clientOS) {
+        return switch (clientOS) {
+            case 0 -> "iOS";
+            case 1 -> "Android";
+            default -> "";
+        };
     }
 
     public static int determineDeliveryTime(int deliveryDistance) {
